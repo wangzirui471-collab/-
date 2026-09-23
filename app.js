@@ -16,6 +16,9 @@
   const fileInput = document.querySelector('#pcd-file');
   const fileDropzone = document.querySelector('#file-dropzone');
   const fileSelection = document.querySelector('#file-selection');
+  const flyPointFilterInput = document.querySelector('#fly-point-filter');
+  const filterStrengthInput = document.querySelector('#filter-strength');
+  const filterSummary = document.querySelector('#filter-summary');
   const modelActions = window.TaiheModelActions;
   const downloadButton = document.querySelector('#download-model');
   const shareButton = document.querySelector('#share-model');
@@ -23,6 +26,7 @@
   const linkDialog = document.querySelector('#link-dialog');
   const dialogValue = document.querySelector('#dialog-value');
   let selectedLocalFile = null;
+  let sourceGeometry = null;
 
   if (new URLSearchParams(window.location.search).get('embed') === '1') {
     document.body.classList.add('embed-mode');
@@ -294,6 +298,63 @@
     points.material.dispose();
   }
 
+  function makeGeometryFromIndices(source, indices) {
+    const geometry = new THREE.BufferGeometry();
+    for (const name of Object.keys(source.attributes)) {
+      const attribute = source.getAttribute(name);
+      const itemSize = attribute.itemSize;
+      const compact = new attribute.array.constructor(indices.length * itemSize);
+      for (let outputIndex = 0; outputIndex < indices.length; outputIndex += 1) {
+        const sourceOffset = indices[outputIndex] * itemSize;
+        const outputOffset = outputIndex * itemSize;
+        compact.set(attribute.array.subarray(sourceOffset, sourceOffset + itemSize), outputOffset);
+      }
+      geometry.setAttribute(name, new THREE.BufferAttribute(compact, itemSize, attribute.normalized));
+    }
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+    return geometry;
+  }
+
+  function refreshFilteredCloud() {
+    if (!sourceGeometry) return;
+
+    const originalCount = sourceGeometry.getAttribute('position').count;
+    const filterResult = flyPointFilterInput.checked
+      ? window.TaihePointFilter.retainedIndices(
+        sourceGeometry.getAttribute('position'),
+        filterStrengthInput.value,
+      )
+      : {
+        indices: Uint32Array.from({ length: originalCount }, function (_, index) { return index; }),
+        radius: 0,
+      };
+    const visibleGeometry = makeGeometryFromIndices(sourceGeometry, filterResult.indices);
+
+    if (cloudPoints) {
+      const previousGeometry = cloudPoints.geometry;
+      cloudPoints.geometry = visibleGeometry;
+      previousGeometry.dispose();
+    } else {
+      cloudPoints = new THREE.Points(visibleGeometry, cloudMaterial);
+      scene.add(cloudPoints);
+    }
+
+    const visibleCount = filterResult.indices.length;
+    const removedCount = originalCount - visibleCount;
+    pointCount.textContent = visibleCount.toLocaleString('zh-CN');
+    const modelPoints = document.querySelector('#model-points');
+    if (modelPoints) modelPoints.textContent = visibleCount.toLocaleString('en-US');
+
+    if (!flyPointFilterInput.checked) {
+      filterSummary.textContent = '滤波已关闭 · 显示全部 ' + originalCount.toLocaleString('zh-CN') + ' 点';
+    } else if (removedCount > 0) {
+      filterSummary.textContent = '已剔除 ' + removedCount.toLocaleString('zh-CN') + ' 个孤立点 · 保留 ' + visibleCount.toLocaleString('zh-CN') + ' 点';
+    } else {
+      filterSummary.textContent = '未发现孤立点 · 显示全部 ' + originalCount.toLocaleString('zh-CN') + ' 点';
+    }
+  }
+
   function loadPointCloudBuffer(buffer, displayName, localFile) {
     const parsedHeader = parseHeaderFromBinary(buffer);
     const loader = new THREE.PCDLoader();
@@ -321,15 +382,14 @@
       opacity: 0.94,
       depthWrite: true,
     });
-    const nextPoints = new THREE.Points(geometry, nextMaterial);
-
     disposeCloud(cloudPoints);
+    if (sourceGeometry) sourceGeometry.dispose();
+    sourceGeometry = geometry;
     cloudMaterial = nextMaterial;
-    cloudPoints = nextPoints;
-    scene.add(cloudPoints);
+    cloudPoints = null;
+    refreshFilteredCloud();
 
     fileName.textContent = displayName;
-    pointCount.textContent = positions.count.toLocaleString('zh-CN');
     pointSizeValue.textContent = Number(pointSizeInput.value).toFixed(2);
     selectedLocalFile = localFile || null;
     const details = modelActions.modelDetails({
@@ -397,6 +457,8 @@
   }
 
   resetButton.addEventListener('click', fitCamera);
+  flyPointFilterInput.addEventListener('change', refreshFilteredCloud);
+  filterStrengthInput.addEventListener('change', refreshFilteredCloud);
   downloadButton.addEventListener('click', function () {
     const anchor = document.createElement('a');
     const cloudUrl = viewport.dataset.pointCloud || DEFAULT_POINT_CLOUD;

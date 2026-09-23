@@ -91,6 +91,25 @@
             </button>
           </section>
 
+          <section class="inspector-section filter-section">
+            <div class="section-title"><span>点云处理</span><span class="section-line"></span></div>
+            <label class="filter-toggle" for="fly-point-filter">
+              <input id="fly-point-filter" type="checkbox" checked />
+              <span class="filter-checkbox" aria-hidden="true"></span>
+              <span>飞点滤波</span>
+            </label>
+            <label class="range-label filter-strength-label" for="filter-strength">
+              <span>滤波强度</span>
+            </label>
+            <select id="filter-strength" class="filter-strength">
+              <option value="conservative">保守（保留更多细节）</option>
+              <option value="standard" selected>标准</option>
+              <option value="strong">强</option>
+            </select>
+            <p id="filter-summary" class="filter-summary" role="status" aria-live="polite">载入点云后统计滤波结果</p>
+            <p class="local-note">按空间邻域剔除孤立点；原文件不变，可随时关闭滤波。</p>
+          </section>
+
           <section class="hint-card">
             <span class="hint-card-icon" aria-hidden="true">✦</span>
             <div>
@@ -158,6 +177,7 @@
     <script src="./vendor/OrbitControls.js"></script>
     <script src="./vendor/PCDLoader.js"></script>
     <script src="./model-actions.js"></script>
+    <script src="./point-filter.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
