@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="description" content="泰合技术三维点云查看器。在线旋转、缩放、平移查看 MS01 点云，也可选择本地 PCD 文件。" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='13'%20fill='%2307111f'/%3E%3Ctext%20x='32'%20y='43'%20text-anchor='middle'%20font-size='31'%20font-family='Arial'%20font-weight='700'%20fill='%2355d8e7'%3ETH%3C/text%3E%3C/svg%3E" />
+    <title>泰合技术 · 3D 点云浏览器</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup" aria-label="泰合技术">
+          <span class="brand-mark" aria-hidden="true">TH</span>
+          <span class="brand-copy">
+            <span class="brand-name">泰合技术</span>
+            <span class="brand-subtitle">TAIHE TECHNOLOGY · 3D VISION</span>
+          </span>
+        </div>
+        <div class="topbar-status"><span class="status-dot" aria-hidden="true"></span>点云工作台</div>
+      </header>
+
+      <main class="workspace">
+        <section class="viewer-panel" aria-label="三维点云视图">
+          <div id="viewport" class="viewport" data-point-cloud="./cloud_20260922_053021_559.pcd" role="application" aria-label="可交互三维点云画布">
+            <div class="viewport-grid" aria-hidden="true"></div>
+            <div class="viewport-label"><span class="crosshair" aria-hidden="true">＋</span> 3D POINT CLOUD</div>
+            <div id="loading" class="state-overlay" role="status" aria-live="polite">
+              <span class="loader-ring" aria-hidden="true"></span>
+              <span>正在加载点云…</span>
+            </div>
+            <div id="error" class="state-overlay error-state" role="alert" hidden>
+              <strong>点云加载失败</strong>
+              <span id="error-message">请刷新页面或重新选择 PCD 文件。</span>
+            </div>
+          </div>
+          <div class="viewer-toolbar">
+            <div class="toolbar-hint"><span class="mouse-icon" aria-hidden="true">◉</span> 拖动旋转 <span class="hint-separator">·</span> 滚轮缩放 <span class="hint-separator">·</span> 中键平移</div>
+            <div class="toolbar-badge"><span class="toolbar-dot" aria-hidden="true"></span> READY</div>
+          </div>
+        </section>
+
+        <aside class="inspector" aria-label="点云信息和控制项">
+          <div class="inspector-heading">
+            <div>
+              <span class="section-kicker">TH VIEWER / 01</span>
+              <h1>三维点云</h1>
+            </div>
+            <span class="version-tag">在线版</span>
+          </div>
+
+          <section class="inspector-section source-section">
+            <div class="section-title"><span>打开点云</span><span class="section-line"></span></div>
+            <div id="file-dropzone" class="file-dropzone">
+              <input id="pcd-file" class="file-input" type="file" accept=".pcd,application/octet-stream" />
+              <label class="file-button" for="pcd-file"><span aria-hidden="true">＋</span> 选择 PCD 文件</label>
+              <p id="file-selection" class="file-selection">也可以把 .pcd 文件拖到这里</p>
+            </div>
+            <p class="local-note">你选择的 PCD 只在浏览器中读取，不会上传。</p>
+          </section>
+
+          <section class="inspector-section">
+            <div class="section-title"><span>数据概览</span><span class="section-line"></span></div>
+            <dl class="stats-list">
+              <div class="stat-row">
+                <dt>文件</dt>
+                <dd id="file-name">等待加载</dd>
+              </div>
+              <div class="stat-row">
+                <dt>点数量</dt>
+                <dd id="point-count">—</dd>
+              </div>
+              <div class="stat-row">
+                <dt>数据字段</dt>
+                <dd id="fields">—</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="inspector-section control-section">
+            <div class="section-title"><span>视图控制</span><span class="section-line"></span></div>
+            <label class="range-label" for="point-size">
+              <span>点大小</span>
+              <output id="point-size-value" for="point-size">0.05</output>
+            </label>
+            <input id="point-size" class="range-input" type="range" min="0.01" max="0.16" step="0.01" value="0.05" />
+            <button id="reset-view" class="reset-button" type="button">
+              <span aria-hidden="true">↻</span> 重置视角
+            </button>
+          </section>
+
+          <section class="hint-card">
+            <span class="hint-card-icon" aria-hidden="true">✦</span>
+            <div>
+              <strong>交互提示</strong>
+              <p>拖动模型查看空间结构。点云颜色根据 intensity 字段映射。</p>
+            </div>
+          </section>
+
+          <div class="inspector-footer"><span>TAIHE TECH</span><span>ONLINE VIEWER</span></div>
+        </aside>
+      </main>
+      <section class="model-card" aria-label="模型详情">
+        <div class="model-header">
+          <div>
+            <span class="section-kicker">3D MODEL / POINT CLOUD</span>
+            <h2 id="model-title">MS01 点云样例</h2>
+            <p class="model-author">发布者：泰合技术</p>
+          </div>
+          <span class="model-type">PCD 点云</span>
+        </div>
+        <div class="model-actions">
+          <button id="download-model" type="button" disabled>↓ 下载当前 PCD</button>
+          <button id="share-model" type="button">↗ 分享</button>
+          <button id="embed-model" type="button">〈/〉 嵌入</button>
+        </div>
+        <p id="model-share-note" class="model-share-note">分享与嵌入展示网站公开样例；本地选取的 PCD 不会上传或自动分享。</p>
+        <dl class="model-facts">
+          <div><dt>点数</dt><dd id="model-points">—</dd></div>
+          <div><dt>三角面</dt><dd id="model-triangles">0（点云）</dd></div>
+          <div><dt>文件大小</dt><dd id="model-size">—</dd></div>
+          <div><dt>字段</dt><dd id="model-fields">—</dd></div>
+          <div><dt>来源</dt><dd id="model-source">网站公开样例</dd></div>
+          <div><dt>授权</dt><dd id="model-license">未注明</dd></div>
+        </dl>
+        <p class="model-description">使用泰合技术点云查看器在线观察三维数据。支持鼠标旋转、缩放、中键平移，也支持从本机打开 PCD 文件。颜色由点云中的强度值映射，并不代表真实拍摄色彩。</p>
+      </section>
+    </div>
+    <dialog id="link-dialog" class="link-dialog" aria-labelledby="dialog-title">
+      <form method="dialog"><button class="dialog-close" aria-label="关闭" type="submit">×</button></form>
+      <h2 id="dialog-title">分享模型</h2>
+      <p id="dialog-description">复制链接，发送给其他人查看公开样例。</p>
+      <textarea id="dialog-value" readonly rows="4" aria-label="分享链接或嵌入代码"></textarea>
+      <div class="dialog-actions"><button id="copy-link" type="button">复制</button><button id="close-dialog" type="button">关闭</button></div>
+      <p id="copy-status" role="status" aria-live="polite"></p>
+    </dialog>
+    <script>
+      window.addEventListener('error', (event) => {
+        const panel = document.querySelector('#error');
+        const message = document.querySelector('#error-message');
+        if (!panel || !message) return;
+        panel.hidden = false;
+        message.textContent = event.message || '浏览器无法执行查看器脚本。';
+        document.querySelector('#loading')?.setAttribute('hidden', '');
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        const panel = document.querySelector('#error');
+        const message = document.querySelector('#error-message');
+        if (!panel || !message) return;
+        panel.hidden = false;
+        message.textContent = event.reason?.message || String(event.reason || '点云加载失败。');
+        document.querySelector('#loading')?.setAttribute('hidden', '');
+      });
+    </script>
+    <script src="./vendor/three.min.js"></script>
+    <script src="./vendor/OrbitControls.js"></script>
+    <script src="./vendor/PCDLoader.js"></script>
+    <script src="./model-actions.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
