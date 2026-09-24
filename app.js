@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const DEFAULT_POINT_CLOUD = './cloud_20260922_053021_559.pcd';
+  const DEFAULT_POINT_CLOUD = './cloud_20260924_083459_906.pcd';
 
   const viewport = document.querySelector('#viewport');
   const loading = document.querySelector('#loading');
