@@ -11,6 +11,7 @@
   const pointCount = document.querySelector('#point-count');
   const fields = document.querySelector('#fields');
   const resetButton = document.querySelector('#reset-view');
+  const axisViewButtons = document.querySelectorAll('[data-axis-view]');
   const pointSizeInput = document.querySelector('#point-size');
   const pointSizeValue = document.querySelector('#point-size-value');
   const pointSizeNote = document.querySelector('#point-size-note');
@@ -24,6 +25,7 @@
   const filterSummary = document.querySelector('#filter-summary');
   const modelActions = window.TaiheModelActions;
   const pointDisplay = window.TaihePointDisplay;
+  const viewPresets = window.TaiheViewPresets;
   const downloadButton = document.querySelector('#download-model');
   const shareButton = document.querySelector('#share-model');
   const embedButton = document.querySelector('#embed-model');
@@ -191,6 +193,7 @@
     cloudRadius = Math.max(sphere.radius, 0.01);
 
     const distance = (cloudRadius / Math.sin(THREE.MathUtils.degToRad(camera.fov * 0.5))) * 1.15;
+    camera.up.set(0, 1, 0);
     camera.position.set(distance * 0.8, distance * 0.58, distance);
     camera.near = Math.max(cloudRadius / 1000, 0.001);
     camera.far = Math.max(cloudRadius * 100, 100);
@@ -198,6 +201,20 @@
     controls.target.copy(center);
     controls.minDistance = Math.max(cloudRadius * 0.04, 0.01);
     controls.maxDistance = Math.max(cloudRadius * 80, 100);
+    controls.update();
+  }
+
+  function setAxisView(name) {
+    if (!cloudPoints) return;
+
+    const center = controls.target;
+    const distance = camera.position.distanceTo(center);
+    const pose = viewPresets.cameraPose(name, center.toArray(), distance);
+    if (!pose) return;
+
+    camera.up.set(...pose.up);
+    camera.position.set(...pose.position);
+    camera.lookAt(center);
     controls.update();
   }
 
@@ -382,6 +399,11 @@
   }
 
   resetButton.addEventListener('click', fitCamera);
+  axisViewButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      setAxisView(button.dataset.axisView);
+    });
+  });
   flyPointFilterInput.addEventListener('change', refreshFilteredCloud);
   filterStrengthInput.addEventListener('change', function () {
     if (filterStrengthInput.value !== 'custom') {

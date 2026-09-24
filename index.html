@@ -27,6 +27,14 @@
           <div id="viewport" class="viewport" data-point-cloud="./cloud_20260922_053021_559.pcd" role="application" aria-label="可交互三维点云画布">
             <div class="viewport-grid" aria-hidden="true"></div>
             <div class="viewport-label"><span class="crosshair" aria-hidden="true">＋</span> 3D POINT CLOUD</div>
+            <div class="axis-view-controls" role="group" aria-label="固定视角">
+              <button class="axis-view-button" type="button" data-axis-view="YU" aria-label="Y 轴正向视角" title="Y 轴正向视角">YU</button>
+              <button class="axis-view-button" type="button" data-axis-view="YD" aria-label="Y 轴负向视角" title="Y 轴负向视角">YD</button>
+              <button class="axis-view-button" type="button" data-axis-view="XU" aria-label="X 轴正向视角" title="X 轴正向视角">XU</button>
+              <button class="axis-view-button" type="button" data-axis-view="XD" aria-label="X 轴负向视角" title="X 轴负向视角">XD</button>
+              <button class="axis-view-button" type="button" data-axis-view="ZU" aria-label="Z 轴正向视角" title="Z 轴正向视角">ZU</button>
+              <button class="axis-view-button" type="button" data-axis-view="ZD" aria-label="Z 轴负向视角" title="Z 轴负向视角">ZD</button>
+            </div>
             <div class="distance-legend" aria-label="颜色按与传感器的距离由近到远映射">
               <span>近</span><span class="distance-gradient" aria-hidden="true"></span><span>远</span>
               <span class="distance-legend-caption">距离伪彩</span>
@@ -190,6 +198,7 @@
     <script src="./model-actions.js"></script>
     <script src="./point-filter.js"></script>
     <script src="./point-display.js"></script>
+    <script src="./view-presets.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
