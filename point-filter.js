@@ -12,6 +12,26 @@
     standard: 3,
     strong: 5,
   };
+  const PRESET_STRENGTH_LEVELS = {
+    conservative: 12,
+    standard: 23,
+    strong: 45,
+  };
+
+  function thresholdForStrength(strength) {
+    if (Object.prototype.hasOwnProperty.call(STRENGTH_THRESHOLDS, strength)) {
+      return STRENGTH_THRESHOLDS[strength];
+    }
+
+    const numericStrength = Number(strength);
+    if (!Number.isFinite(numericStrength)) return STRENGTH_THRESHOLDS.standard;
+    const level = Math.min(100, Math.max(1, Math.round(numericStrength)));
+    return 1 + Math.round((level - 1) * 9 / 99);
+  }
+
+  function strengthLevelForPreset(preset) {
+    return PRESET_STRENGTH_LEVELS[preset] || PRESET_STRENGTH_LEVELS.standard;
+  }
 
   function cellKey(x, y, z) {
     return x + ',' + y + ',' + z;
@@ -63,7 +83,7 @@
     }
 
     const radiusSquared = radius * radius;
-    const threshold = STRENGTH_THRESHOLDS[strength] || STRENGTH_THRESHOLDS.conservative;
+    const threshold = thresholdForStrength(strength);
     const cells = new Map();
 
     for (let index = 0; index < count; index += 1) {
@@ -117,5 +137,9 @@
     return { indices: Uint32Array.from(retained), radius: radius };
   }
 
-  return { retainedIndices: retainedIndices };
+  return {
+    retainedIndices: retainedIndices,
+    thresholdForStrength: thresholdForStrength,
+    strengthLevelForPreset: strengthLevelForPreset,
+  };
 }));

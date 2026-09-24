@@ -27,6 +27,15 @@
           <div id="viewport" class="viewport" data-point-cloud="./cloud_20260922_053021_559.pcd" role="application" aria-label="可交互三维点云画布">
             <div class="viewport-grid" aria-hidden="true"></div>
             <div class="viewport-label"><span class="crosshair" aria-hidden="true">＋</span> 3D POINT CLOUD</div>
+            <div class="distance-legend" aria-label="颜色按与传感器的距离由近到远映射">
+              <span>近</span><span class="distance-gradient" aria-hidden="true"></span><span>远</span>
+              <span class="distance-legend-caption">距离伪彩</span>
+            </div>
+            <div class="filter-level-control" aria-label="飞点滤波强度">
+              <label for="filter-level"><span>滤波强度</span><output id="filter-level-value" for="filter-level">23 / 100</output></label>
+              <input id="filter-level" class="range-input" type="range" min="1" max="100" step="1" value="23" aria-label="滤波强度，1 最轻，100 最强" />
+              <div class="filter-level-range"><span>1 · 轻</span><span>100 · 强</span></div>
+            </div>
             <div id="loading" class="state-overlay" role="status" aria-live="polite">
               <span class="loader-ring" aria-hidden="true"></span>
               <span>正在加载点云…</span>
@@ -82,10 +91,11 @@
           <section class="inspector-section control-section">
             <div class="section-title"><span>视图控制</span><span class="section-line"></span></div>
             <label class="range-label" for="point-size">
-              <span>点大小</span>
-              <output id="point-size-value" for="point-size">0.05</output>
+              <span>点大小（相对点距）</span>
+              <output id="point-size-value" for="point-size">0.65×</output>
             </label>
-            <input id="point-size" class="range-input" type="range" min="0.01" max="0.16" step="0.01" value="0.05" />
+            <input id="point-size" class="range-input" type="range" min="0.25" max="1.50" step="0.05" value="0.65" />
+            <p id="point-size-note" class="local-note">加载后按点间距自动适配</p>
             <button id="reset-view" class="reset-button" type="button">
               <span aria-hidden="true">↻</span> 重置视角
             </button>
@@ -105,16 +115,17 @@
               <option value="conservative">保守（保留更多细节）</option>
               <option value="standard" selected>标准</option>
               <option value="strong">强</option>
+              <option value="custom">自定义（使用左下方滑杆）</option>
             </select>
             <p id="filter-summary" class="filter-summary" role="status" aria-live="polite">载入点云后统计滤波结果</p>
-            <p class="local-note">按空间邻域剔除孤立点；原文件不变，可随时关闭滤波。</p>
+            <p class="local-note">按空间邻域剔除孤立点；左下角可调 1–100 强度，数值越大滤波越强。原文件不变，关闭滤波可恢复全部点。</p>
           </section>
 
           <section class="hint-card">
             <span class="hint-card-icon" aria-hidden="true">✦</span>
             <div>
               <strong>交互提示</strong>
-              <p>拖动模型查看空间结构。点云颜色根据 intensity 字段映射。</p>
+              <p>点颜色表示与传感器的距离（近蓝、远黄），不是照片颜色；小点显示更容易分辨叶片间隙。</p>
             </div>
           </section>
 
@@ -144,7 +155,7 @@
           <div><dt>来源</dt><dd id="model-source">网站公开样例</dd></div>
           <div><dt>授权</dt><dd id="model-license">未注明</dd></div>
         </dl>
-        <p class="model-description">使用泰合技术点云查看器在线观察三维数据。支持鼠标旋转、缩放、中键平移，也支持从本机打开 PCD 文件。颜色由点云中的强度值映射，并不代表真实拍摄色彩。</p>
+        <p class="model-description">使用泰合技术点云查看器在线观察三维数据。支持鼠标旋转、缩放、中键平移，也支持从本机打开 PCD 文件。颜色根据点到传感器原点的距离映射，仅用于观察空间层次，不代表真实照片颜色。</p>
       </section>
     </div>
     <dialog id="link-dialog" class="link-dialog" aria-labelledby="dialog-title">
@@ -178,6 +189,7 @@
     <script src="./vendor/PCDLoader.js"></script>
     <script src="./model-actions.js"></script>
     <script src="./point-filter.js"></script>
+    <script src="./point-display.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

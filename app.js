@@ -13,13 +13,17 @@
   const resetButton = document.querySelector('#reset-view');
   const pointSizeInput = document.querySelector('#point-size');
   const pointSizeValue = document.querySelector('#point-size-value');
+  const pointSizeNote = document.querySelector('#point-size-note');
   const fileInput = document.querySelector('#pcd-file');
   const fileDropzone = document.querySelector('#file-dropzone');
   const fileSelection = document.querySelector('#file-selection');
   const flyPointFilterInput = document.querySelector('#fly-point-filter');
   const filterStrengthInput = document.querySelector('#filter-strength');
+  const filterLevelInput = document.querySelector('#filter-level');
+  const filterLevelValue = document.querySelector('#filter-level-value');
   const filterSummary = document.querySelector('#filter-summary');
   const modelActions = window.TaiheModelActions;
+  const pointDisplay = window.TaihePointDisplay;
   const downloadButton = document.querySelector('#download-model');
   const shareButton = document.querySelector('#share-model');
   const embedButton = document.querySelector('#embed-model');
@@ -37,7 +41,7 @@
   }
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x07111f);
+  scene.background = new THREE.Color(0x000000);
 
   const camera = new THREE.PerspectiveCamera(46, 1, 0.01, 1000);
   camera.position.set(2.2, 1.6, 2.8);
@@ -62,8 +66,7 @@
   let cloudPoints = null;
   let cloudMaterial = null;
   let cloudRadius = 1;
-  let helperGrid = null;
-  let helperAxes = null;
+  let cloudSpacing = 0;
 
   function setLoading(isLoading) {
     loading.hidden = !isLoading;
@@ -90,46 +93,6 @@
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
-  }
-
-  function clamp01(value) {
-    return Math.min(1, Math.max(0, value));
-  }
-
-  function normalizeIntensity(value, min, max) {
-    const numericValue = Number(value);
-    const numericMin = Number(min);
-    const numericMax = Number(max);
-
-    if (
-      !Number.isFinite(numericValue) ||
-      !Number.isFinite(numericMin) ||
-      !Number.isFinite(numericMax) ||
-      numericMax <= numericMin
-    ) {
-      return 0.5;
-    }
-
-    return clamp01((numericValue - numericMin) / (numericMax - numericMin));
-  }
-
-  function intensityToRgb(normalized) {
-    const value = clamp01(Number.isFinite(Number(normalized)) ? Number(normalized) : 0.5);
-    const hue = (2 / 3) * (1 - value);
-    const scaled = hue * 6;
-    const sector = Math.floor(scaled);
-    const fraction = scaled - sector;
-    const q = 1 - fraction;
-    const t = fraction;
-
-    switch (sector % 6) {
-      case 0: return [1, t, 0];
-      case 1: return [q, 1, 0];
-      case 2: return [0, 1, t];
-      case 3: return [0, q, 1];
-      case 4: return [t, 0, 1];
-      default: return [1, 0, q];
-    }
   }
 
   function parseHeaderFromBinary(buffer) {
@@ -163,6 +126,7 @@
       if (key === 'SIZE') header.sizes = parts.map(Number);
       if (key === 'TYPE') header.types = parts;
       if (key === 'COUNT') header.counts = parts.map(Number);
+      if (key === 'VIEWPOINT') header.viewpoint = parts.slice(0, 3).map(Number);
       if (key === 'POINTS') header.points = Number(parts[0] || 0);
       if (key === 'WIDTH' && !header.points) header.points = Number(parts[0] || 0);
       if (key === 'HEIGHT' && header.points && header.points === Number(parts[0] || 0)) {
@@ -208,67 +172,14 @@
     throw new Error('暂不支持 intensity 字段类型。');
   }
 
-  function createIntensityColors(geometry, parsedHeader) {
+  function createDistanceColors(geometry, parsedHeader) {
     const positions = geometry.getAttribute('position');
-    const intensities = geometry.getAttribute('intensity');
-    const existingColors = geometry.getAttribute('color');
-    const colors = new Float32Array(positions.count * 3);
-
-    if (intensities && intensities.count === positions.count) {
-      let min = Infinity;
-      let max = -Infinity;
-      for (let index = 0; index < intensities.count; index += 1) {
-        const value = intensities.getX(index);
-        if (!Number.isFinite(value)) continue;
-        min = Math.min(min, value);
-        max = Math.max(max, value);
-      }
-
-      for (let index = 0; index < positions.count; index += 1) {
-        const normalized = normalizeIntensity(intensities.getX(index), min, max);
-        const rgb = intensityToRgb(normalized);
-        const offset = index * 3;
-        colors[offset] = rgb[0];
-        colors[offset + 1] = rgb[1];
-        colors[offset + 2] = rgb[2];
-      }
-      fields.textContent = (parsedHeader.fields || ['x', 'y', 'z', 'intensity']).join(' · ');
-    } else if (existingColors && existingColors.count === positions.count) {
-      for (let index = 0; index < existingColors.count; index += 1) {
-        const offset = index * 3;
-        colors[offset] = existingColors.getX(index);
-        colors[offset + 1] = existingColors.getY(index);
-        colors[offset + 2] = existingColors.getZ(index);
-      }
-      fields.textContent = 'x · y · z · rgb';
-    } else {
-      for (let index = 0; index < positions.count; index += 1) {
-        const offset = index * 3;
-        colors[offset] = 0.28;
-        colors[offset + 1] = 0.84;
-        colors[offset + 2] = 0.92;
-      }
-      fields.textContent = (parsedHeader.fields || ['x', 'y', 'z']).join(' · ');
-    }
-
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  }
-
-  function rebuildHelpers(radius) {
-    if (helperGrid) scene.remove(helperGrid);
-    if (helperAxes) scene.remove(helperAxes);
-
-    const size = Math.max(radius * 2.4, 1);
-    helperGrid = new THREE.GridHelper(size, 12, 0x244665, 0x142b43);
-    helperGrid.position.y = -radius * 0.72;
-    helperGrid.material.opacity = 0.48;
-    helperGrid.material.transparent = true;
-    scene.add(helperGrid);
-
-    helperAxes = new THREE.AxesHelper(Math.max(radius * 0.42, 0.25));
-    helperAxes.material.transparent = true;
-    helperAxes.material.opacity = 0.72;
-    scene.add(helperAxes);
+    const result = pointDisplay.distanceColors(
+      positions.array,
+      parsedHeader.viewpoint || [0, 0, 0],
+    );
+    geometry.setAttribute('color', new THREE.BufferAttribute(result.colors, 3));
+    fields.textContent = (parsedHeader.fields || ['x', 'y', 'z']).join(' · ');
   }
 
   function fitCamera() {
@@ -288,7 +199,20 @@
     controls.minDistance = Math.max(cloudRadius * 0.04, 0.01);
     controls.maxDistance = Math.max(cloudRadius * 80, 100);
     controls.update();
-    rebuildHelpers(cloudRadius);
+  }
+
+  function updatePointSize() {
+    const multiplier = Number(pointSizeInput.value);
+    const actualSize = pointDisplay.pointSizeForSpacing(cloudSpacing, multiplier);
+    pointSizeValue.textContent = multiplier.toFixed(2) + '×';
+    pointSizeNote.textContent = cloudSpacing > 0
+      ? '估算点距 ' + cloudSpacing.toPrecision(3) + ' · 当前点径 ' + actualSize.toPrecision(3)
+      : '加载后按点间距自动适配';
+    if (cloudMaterial) cloudMaterial.size = actualSize;
+  }
+
+  function updateFilterLevelLabel() {
+    filterLevelValue.textContent = Math.round(Number(filterLevelInput.value)) + ' / 100';
   }
 
   function disposeCloud(points) {
@@ -323,7 +247,7 @@
     const filterResult = flyPointFilterInput.checked
       ? window.TaihePointFilter.retainedIndices(
         sourceGeometry.getAttribute('position'),
-        filterStrengthInput.value,
+        Number(filterLevelInput.value),
       )
       : {
         indices: Uint32Array.from({ length: originalCount }, function (_, index) { return index; }),
@@ -349,9 +273,9 @@
     if (!flyPointFilterInput.checked) {
       filterSummary.textContent = '滤波已关闭 · 显示全部 ' + originalCount.toLocaleString('zh-CN') + ' 点';
     } else if (removedCount > 0) {
-      filterSummary.textContent = '已剔除 ' + removedCount.toLocaleString('zh-CN') + ' 个孤立点 · 保留 ' + visibleCount.toLocaleString('zh-CN') + ' 点';
+      filterSummary.textContent = '强度 ' + filterLevelInput.value + '/100 · 已剔除 ' + removedCount.toLocaleString('zh-CN') + ' 个孤立点 · 保留 ' + visibleCount.toLocaleString('zh-CN') + ' 点';
     } else {
-      filterSummary.textContent = '未发现孤立点 · 显示全部 ' + originalCount.toLocaleString('zh-CN') + ' 点';
+      filterSummary.textContent = '强度 ' + filterLevelInput.value + '/100 · 未发现孤立点 · 显示全部 ' + originalCount.toLocaleString('zh-CN') + ' 点';
     }
   }
 
@@ -370,12 +294,13 @@
       geometry.setAttribute('intensity', new THREE.Float32BufferAttribute(parsedHeader.values, 1));
     }
 
+    cloudSpacing = pointDisplay.estimateSpacing(positions, 96);
+    createDistanceColors(geometry, parsedHeader);
     geometry.computeBoundingBox();
     geometry.center();
-    createIntensityColors(geometry, parsedHeader);
 
     const nextMaterial = new THREE.PointsMaterial({
-      size: Number(pointSizeInput.value),
+      size: pointDisplay.pointSizeForSpacing(cloudSpacing, Number(pointSizeInput.value)),
       sizeAttenuation: true,
       vertexColors: true,
       transparent: true,
@@ -390,7 +315,7 @@
     refreshFilteredCloud();
 
     fileName.textContent = displayName;
-    pointSizeValue.textContent = Number(pointSizeInput.value).toFixed(2);
+    updatePointSize();
     selectedLocalFile = localFile || null;
     const details = modelActions.modelDetails({
       name: localFile ? displayName : 'MS01 点云样例',
@@ -458,7 +383,18 @@
 
   resetButton.addEventListener('click', fitCamera);
   flyPointFilterInput.addEventListener('change', refreshFilteredCloud);
-  filterStrengthInput.addEventListener('change', refreshFilteredCloud);
+  filterStrengthInput.addEventListener('change', function () {
+    if (filterStrengthInput.value !== 'custom') {
+      filterLevelInput.value = String(window.TaihePointFilter.strengthLevelForPreset(filterStrengthInput.value));
+    }
+    updateFilterLevelLabel();
+    refreshFilteredCloud();
+  });
+  filterLevelInput.addEventListener('input', function () {
+    filterStrengthInput.value = 'custom';
+    updateFilterLevelLabel();
+  });
+  filterLevelInput.addEventListener('change', refreshFilteredCloud);
   downloadButton.addEventListener('click', function () {
     const anchor = document.createElement('a');
     const cloudUrl = viewport.dataset.pointCloud || DEFAULT_POINT_CLOUD;
@@ -498,9 +434,7 @@
     });
   });
   pointSizeInput.addEventListener('input', function () {
-    const value = Number(pointSizeInput.value);
-    pointSizeValue.textContent = value.toFixed(2);
-    if (cloudMaterial) cloudMaterial.size = value;
+    updatePointSize();
   });
   fileInput.addEventListener('change', function (event) {
     const file = event.target.files && event.target.files[0];
@@ -525,6 +459,7 @@
   });
   window.addEventListener('resize', resizeRenderer);
 
+  updateFilterLevelLabel();
   resizeRenderer();
   loadPointCloud();
 
