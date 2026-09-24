@@ -18,6 +18,10 @@ test('maps the three quick presets onto the continuous strength control', () => 
   assert.equal(thresholdForStrength(strengthLevelForPreset('standard')), 3);
 });
 
+test('falls back to the conservative threshold for an unknown preset', () => {
+  assert.equal(thresholdForStrength('unknown'), 2);
+});
+
 test('increasing filter strength never increases the retained point count', () => {
   const positions = {
     count: 15,

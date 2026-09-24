@@ -24,7 +24,7 @@
     }
 
     const numericStrength = Number(strength);
-    if (!Number.isFinite(numericStrength)) return STRENGTH_THRESHOLDS.standard;
+    if (!Number.isFinite(numericStrength)) return STRENGTH_THRESHOLDS.conservative;
     const level = Math.min(100, Math.max(1, Math.round(numericStrength)));
     return 1 + Math.round((level - 1) * 9 / 99);
   }
