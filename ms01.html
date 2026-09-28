@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="description" content="泰合技术 TH-MS01 全固态 3D ToF 传感器产品介绍与规格参数。" />
+    <title>TH-MS01 全固态 3D ToF 传感器 · 泰合技术</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./ms01.css" />
+  </head>
+  <body class="product-site">
+    <div class="product-shell">
+      <header class="topbar product-topbar">
+        <a class="brand-lockup product-brand" href="./ms01.html" aria-label="泰合技术 MS01 产品介绍">
+          <span class="brand-mark" aria-hidden="true">TH</span>
+          <span class="brand-copy">
+            <span class="brand-name">泰合技术</span>
+            <span class="brand-subtitle">TAIHE TECHNOLOGY · 3D VISION</span>
+          </span>
+        </a>
+        <div class="topbar-links">
+          <nav class="topbar-nav" aria-label="网站导航">
+            <a href="./index.html">点云工作台</a>
+            <a href="./ms01.html" aria-current="page">MS01 产品</a>
+          </nav>
+          <div class="topbar-status"><span class="status-dot" aria-hidden="true"></span>产品中心</div>
+        </div>
+      </header>
+
+      <main class="product-main">
+        <section class="product-hero" aria-labelledby="product-title">
+          <div class="product-hero-copy">
+            <p class="product-kicker"><span class="status-dot" aria-hidden="true"></span> TH-MS01 / INDIRECT TIME-OF-FLIGHT</p>
+            <h1 id="product-title">TH-MS01<span>全固态 3D ToF 传感器</span></h1>
+            <p class="product-lead">基于间接飞行时间法的全固态图像级激光雷达，集成距离探测与红外图像采集，可输出深度、红外和置信度数据。</p>
+            <p class="product-note">工作模式、分辨率、测距范围、帧率、精度及视场角可按项目需求定制。下方参数为产品说明书列出的常规规格。</p>
+            <div class="product-actions">
+              <a class="product-button product-button-primary" href="./index.html">打开点云工作台 <span aria-hidden="true">↗</span></a>
+              <a class="product-button product-button-secondary" href="#specifications">查看规格 <span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
+
+          <figure class="structure-card">
+            <div class="structure-card-topline"><span>MECHANICAL OUTLINE</span><span>GMSL2 INTERFACE</span></div>
+            <div class="structure-image-wrap">
+              <img src="./ms01-structure.png" alt="TH-MS01 GMSL2 接口版本结构尺寸工程图" />
+            </div>
+            <figcaption>
+              <span>GMSL2 接口版本工程图</span>
+              <span>尺寸以对应版本工程图为准</span>
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="product-highlights" aria-label="产品要点">
+          <article><span class="highlight-index">01 / OUTPUT</span><strong>深度 · 红外 · 置信度</strong><span>三类数据输出</span></article>
+          <article><span class="highlight-index">02 / INTERFACE</span><strong>GMSL2 · USB 3.0</strong><span>按项目配置接口方案</span></article>
+          <article><span class="highlight-index">03 / SDK</span><strong>Linux · Windows</strong><span>C/C++ 驱动支持</span></article>
+        </section>
+
+        <section id="specifications" class="product-section" aria-labelledby="specifications-title">
+          <div class="section-heading">
+            <div>
+              <p class="product-kicker">PERFORMANCE CONFIGURATIONS</p>
+              <h2 id="specifications-title">两种常规规格，面向不同测量任务</h2>
+            </div>
+            <p>具体性能随工作模式和定制配置而变化；请以实际交付型号及技术确认结果为准。</p>
+          </div>
+
+          <div class="configuration-grid">
+            <article class="configuration-card" data-config="precision">
+              <div class="configuration-topline"><span>CONFIGURATION / 01</span><span class="configuration-tag">近距离 · 高精度</span></div>
+              <h3>高精度测量</h3>
+              <p class="configuration-description">适用于体积测量、机器人手抓取等近距离应用。</p>
+              <dl class="configuration-specs">
+                <div><dt>测距范围</dt><dd>0.2–5 m</dd></div>
+                <div><dt>测距精度</dt><dd>0.2–1 m：&lt;5 mm<br />1–5 m：±1% depth</dd></div>
+                <div><dt>单帧点云</dt><dd>1280 × 960</dd></div>
+                <div><dt>帧率</dt><dd>30 fps</dd></div>
+                <div><dt>视场角</dt><dd>100° × 75° <small>（其他可定制）</small></dd></div>
+                <div><dt>盲区</dt><dd>≤20 cm</dd></div>
+              </dl>
+            </article>
+
+            <article class="configuration-card configuration-card-alt" data-config="distance">
+              <div class="configuration-topline"><span>CONFIGURATION / 02</span><span class="configuration-tag">中远距离</span></div>
+              <h3>检测与识别</h3>
+              <p class="configuration-description">面向中远距离目标检测和识别任务。</p>
+              <dl class="configuration-specs">
+                <div><dt>测距范围</dt><dd>0.2–10 m</dd></div>
+                <div><dt>测距精度</dt><dd>10 mm 或 ±1% depth</dd></div>
+                <div><dt>单帧点云</dt><dd>640 × 480</dd></div>
+                <div><dt>帧率</dt><dd>10–20 fps</dd></div>
+                <div><dt>视场角</dt><dd>60° × 45°</dd></div>
+                <div><dt>盲区</dt><dd>≤20 cm</dd></div>
+              </dl>
+            </article>
+          </div>
+        </section>
+
+        <section class="calibration-section product-section" aria-labelledby="calibration-title">
+          <div class="section-heading">
+            <div>
+              <p class="product-kicker">DEPTH CALIBRATION PRESETS</p>
+              <h2 id="calibration-title">可选深度值标定模式</h2>
+            </div>
+            <p>以下模式名称与频率选项依据 THViewCaliM 上位机界面整理。</p>
+          </div>
+
+          <div class="calibration-grid">
+            <article class="calibration-card" data-calibration-type="single-frequency">
+              <div class="calibration-card-topline"><span>MODE 22 / DP</span><span>单频</span></div>
+              <h3>单频标定</h3>
+              <ul class="calibration-mode-list" aria-label="单频标定模式">
+                <li><code>mode22_30mhz_dp</code><span>30 MHz</span></li>
+                <li><code>mode22_35mhz_dp</code><span>35 MHz</span></li>
+                <li><code>mode22_75mhz_dp</code><span>75 MHz</span></li>
+                <li><code>mode22_100mhz_dp</code><span>100 MHz</span></li>
+                <li><code>mode22_120mhz_dp</code><span>120 MHz</span></li>
+                <li><code>mode22_175mhz_dp</code><span>175 MHz</span></li>
+                <li><code>mode22_200mhz_dp</code><span>200 MHz</span></li>
+              </ul>
+            </article>
+
+            <article class="calibration-card" data-calibration-type="dual-frequency">
+              <div class="calibration-card-topline"><span>MODE 32 / DP</span><span>双频组合</span></div>
+              <h3>双频标定</h3>
+              <ul class="calibration-mode-list" aria-label="双频标定模式">
+                <li><code>mode32_30mhz_35mhz_dp</code><span>30 + 35 MHz</span></li>
+                <li><code>mode32_100mhz_120mhz_dp</code><span>100 + 120 MHz</span></li>
+                <li><code>mode32_175mhz_200mhz_dp</code><span>175 + 200 MHz</span></li>
+              </ul>
+            </article>
+          </div>
+
+          <p class="calibration-note"><strong>标定说明</strong><span>模式选择、距离设置和结果保存请在 THViewCaliM 上位机中操作。本网页仅作产品参数展示，不会连接相机或执行标定。</span></p>
+        </section>
+
+        <section class="technical-section io-overview" data-io-overview aria-labelledby="technical-title">
+          <div class="technical-intro">
+            <p class="product-kicker">I/O & SYSTEM INTEGRATION</p>
+            <h2 id="technical-title">接口与数据 I/O</h2>
+            <p>TH-MS01 输出深度、红外和置信度数据；主机连接可选 USB 3.0 Type-C，或按项目定制 GMSL2 接口方案。</p>
+          </div>
+          <dl class="technical-list io-list">
+            <div data-io-kind="output"><dt>数据输出</dt><dd>Depth · IR · 置信度</dd></div>
+            <div data-io-kind="data-link"><dt>主机数据接口</dt><dd>USB 3.0 Type-C / GMSL2（可定制）</dd></div>
+            <div data-io-kind="gmsl2"><dt>GMSL2 配套</dt><dd>可定制 MIPI 转接板；提供 RK3576 GMSL2 驱动 SDK</dd></div>
+            <div data-io-kind="power"><dt>供电与功耗</dt><dd>供电范围 19–24 V · 功耗 ≤8 W</dd></div>
+            <div data-io-kind="power-terminal"><dt>连接器说明</dt><dd>手册列出 USB 3.0 Type-C 与 DC-026M 端子；具体功能按接口版本确认</dd></div>
+            <div data-io-kind="driver"><dt>驱动与系统</dt><dd>Th_driver · C/C++ · Linux / Windows</dd></div>
+            <div><dt>工作温度</dt><dd>−10 °C 至 60 °C</dd></div>
+            <div><dt>激光安全</dt><dd>Class 1</dd></div>
+          </dl>
+          <p class="technical-footnote">说明书未提供 GPIO、外部触发或连接器针脚定义；实际接线请以对应接口版本的工程资料为准。规格表列出 56 × 56 × 44 mm；不同接口版本请按对应工程图确认。</p>
+        </section>
+
+        <section class="product-cta" aria-labelledby="cta-title">
+          <div><p class="product-kicker">EXPLORE THE DATA</p><h2 id="cta-title">查看点云在三维空间中的呈现</h2></div>
+          <a class="product-button product-button-primary" href="./index.html">进入点云工作台 <span aria-hidden="true">↗</span></a>
+        </section>
+
+        <footer class="product-footer">
+          <span>泰合技术 · TH-MS01 全固态 3D ToF 传感器</span>
+          <a href="mailto:taihe@tai-he.com.cn">taihe@tai-he.com.cn</a>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

@@ -119,9 +119,57 @@
     return Math.max(safeSpacing * safeMultiplier, 0.001);
   }
 
+  function hasPointRgb(fields, colorAttribute, pointCount) {
+    const hasPackedRgb = Array.isArray(fields)
+      && fields.some(function (field) { return String(field).toLowerCase() === 'rgb'; });
+    return Boolean(
+      hasPackedRgb
+      && colorAttribute
+      && colorAttribute.itemSize >= 3
+      && colorAttribute.count === pointCount,
+    );
+  }
+
+  function addCircularPointMask(material) {
+    if (!material || typeof material !== 'object') {
+      throw new TypeError('A point material is required to add the circular point mask.');
+    }
+
+    const marker = '#include <color_fragment>';
+    const previousHook = material.onBeforeCompile;
+    const previousCacheKey = typeof material.customProgramCacheKey === 'function'
+      ? material.customProgramCacheKey
+      : null;
+
+    material.onBeforeCompile = function (shader, renderer) {
+      if (typeof previousHook === 'function') previousHook.call(this, shader, renderer);
+      if (!shader || typeof shader.fragmentShader !== 'string' || !shader.fragmentShader.includes(marker)) {
+        throw new Error('Cannot add circular point mask: expected #include <color_fragment> in the point fragment shader.');
+      }
+
+      if (shader.fragmentShader.includes('taihePointRadius')) return;
+      shader.fragmentShader = shader.fragmentShader.replace(
+        marker,
+        marker + '\n'
+          + 'float taihePointRadius = length(gl_PointCoord - vec2(0.5));\n'
+          + 'if (taihePointRadius >= 0.5) discard;\n'
+          + 'diffuseColor.a *= 1.0 - smoothstep(0.46, 0.5, taihePointRadius);',
+      );
+    };
+
+    material.customProgramCacheKey = function () {
+      const previousKey = previousCacheKey ? previousCacheKey.call(this) : '';
+      return String(previousKey) + '|taihe-circular-point-mask-v1';
+    };
+
+    return material;
+  }
+
   return {
     estimateSpacing: estimateSpacing,
     distanceColors: distanceColors,
     pointSizeForSpacing: pointSizeForSpacing,
+    hasPointRgb: hasPointRgb,
+    addCircularPointMask: addCircularPointMask,
   };
 }));

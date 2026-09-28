@@ -10,6 +10,8 @@
   const fileName = document.querySelector('#file-name');
   const pointCount = document.querySelector('#point-count');
   const fields = document.querySelector('#fields');
+  const distanceLegend = document.querySelector('#distance-legend');
+  const pointColorNote = document.querySelector('#point-color-note');
   const resetButton = document.querySelector('#reset-view');
   const axisViewButtons = document.querySelectorAll('[data-axis-view]');
   const pointSizeInput = document.querySelector('#point-size');
@@ -211,12 +213,23 @@
 
   function createDistanceColors(geometry, parsedHeader) {
     const positions = geometry.getAttribute('position');
+    const existingColors = geometry.getAttribute('color');
+    if (pointDisplay.hasPointRgb(parsedHeader.fields, existingColors, positions.count)) {
+      if (distanceLegend) distanceLegend.hidden = true;
+      if (pointColorNote) pointColorNote.textContent = '当前使用 PCD 自带的逐点 RGB 颜色。';
+      fields.textContent = parsedHeader.fields.join(' · ');
+      return 'rgb';
+    }
+
     const result = pointDisplay.distanceColors(
       positions.array,
       parsedHeader.viewpoint || [0, 0, 0],
     );
     geometry.setAttribute('color', new THREE.BufferAttribute(result.colors, 3));
     fields.textContent = (parsedHeader.fields || ['x', 'y', 'z']).join(' · ');
+    if (distanceLegend) distanceLegend.hidden = false;
+    if (pointColorNote) pointColorNote.textContent = '当前为距离伪彩（近蓝、远黄），不是照片颜色。';
+    return 'distance';
   }
 
   function fitCamera() {
@@ -359,6 +372,7 @@
       opacity: 0.94,
       depthWrite: true,
     });
+    pointDisplay.addCircularPointMask(nextMaterial);
     disposeCloud(cloudPoints);
     if (sourceGeometry) sourceGeometry.dispose();
     sourceGeometry = geometry;
@@ -531,4 +545,3 @@
 
   animate();
 }());
-
