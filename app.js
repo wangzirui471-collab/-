@@ -66,14 +66,18 @@
   renderer.setClearColor(0x07111f, 0);
   viewport.appendChild(renderer.domElement);
 
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.075;
+  const controls = new THREE.TrackballControls(camera, renderer.domElement);
+  controls.rotateSpeed = 1.0;
+  controls.zoomSpeed = 1.2;
+  controls.panSpeed = 0.8;
+  controls.staticMoving = true;
   controls.minDistance = 0.01;
   controls.maxDistance = 10000;
-  controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
-  controls.mouseButtons.MIDDLE = THREE.MOUSE.PAN;
-  controls.mouseButtons.RIGHT = null;
+  // TrackballControls r128 assigns fixed actions to its LEFT/MIDDLE/RIGHT slots:
+  // route physical middle-click through RIGHT (pan), and disable physical right-click.
+  controls.mouseButtons.LEFT = THREE.MOUSE.LEFT;
+  controls.mouseButtons.MIDDLE = -1;
+  controls.mouseButtons.RIGHT = THREE.MOUSE.MIDDLE;
   renderer.domElement.addEventListener('contextmenu', function (event) {
     event.preventDefault();
   });
@@ -108,6 +112,7 @@
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
+    controls.handleResize();
   }
 
   function parseHeaderFromBinary(buffer) {
@@ -506,3 +511,4 @@
 
   animate();
 }());
+
