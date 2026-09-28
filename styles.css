@@ -98,7 +98,7 @@ button, input { font: inherit; }
 .axis-view-button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 .distance-legend { align-items: center; color: rgba(230, 240, 250, 0.78); display: flex; font-size: 10px; gap: 8px; pointer-events: none; position: absolute; right: 20px; top: 18px; z-index: 2; }
 .distance-legend[hidden] { display: none; }
-.distance-gradient { background: linear-gradient(90deg, #143df9, #00d1ff, #0fe038, #ffd60a); border: 1px solid rgba(255,255,255,.28); border-radius: 99px; height: 8px; width: 96px; }
+.distance-gradient { background: linear-gradient(90deg, #051fff, #00d6ff, #05e61f, #ffeb05, #ff6b00, #f00a04); border: 1px solid rgba(255,255,255,.28); border-radius: 99px; height: 8px; width: 96px; }
 .distance-legend-caption { color: rgba(168, 205, 234, 0.54); margin-left: 4px; }
 .filter-level-control { background: rgba(5, 11, 19, 0.86); backdrop-filter: blur(8px); border: 1px solid rgba(124, 169, 205, 0.32); border-radius: 10px; bottom: 16px; display: grid; gap: 9px; left: 16px; padding: 11px 13px; position: absolute; width: min(286px, calc(100% - 32px)); z-index: 2; }
 .filter-level-control label, .filter-level-range { align-items: center; color: #c8d8e7; display: flex; font-size: 10px; justify-content: space-between; }

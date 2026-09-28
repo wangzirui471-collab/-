@@ -213,7 +213,7 @@
     throw new Error('暂不支持 intensity 字段类型。');
   }
 
-  function createDistanceColors(geometry, parsedHeader) {
+  function createDepthColors(geometry, parsedHeader) {
     const positions = geometry.getAttribute('position');
     const existingColors = geometry.getAttribute('color');
     if (pointDisplay.hasPointRgb(parsedHeader.fields, existingColors, positions.count)) {
@@ -223,15 +223,15 @@
       return 'rgb';
     }
 
-    const result = pointDisplay.distanceColors(
+    const result = pointDisplay.depthColors(
       positions.array,
       parsedHeader.viewpoint || [0, 0, 0],
     );
     geometry.setAttribute('color', new THREE.BufferAttribute(result.colors, 3));
     fields.textContent = (parsedHeader.fields || ['x', 'y', 'z']).join(' · ');
     if (distanceLegend) distanceLegend.hidden = false;
-    if (pointColorNote) pointColorNote.textContent = '当前为距离伪彩（近蓝、远黄），不是照片颜色。';
-    return 'distance';
+    if (pointColorNote) pointColorNote.textContent = '当前为 X 轴深度伪彩（近蓝、远红），不是照片颜色。';
+    return 'depth';
   }
 
   function fitCamera() {
@@ -375,7 +375,7 @@
     }
 
     cloudSpacing = pointDisplay.estimateSpacing(positions, 96);
-    createDistanceColors(geometry, parsedHeader);
+    createDepthColors(geometry, parsedHeader);
     geometry.computeBoundingBox();
     geometry.center();
 

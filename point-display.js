@@ -5,11 +5,13 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const DISTANCE_PALETTE = [
-    [0.08, 0.24, 0.98],
-    [0.00, 0.82, 1.00],
-    [0.04, 0.88, 0.20],
-    [1.00, 0.84, 0.04],
+  const DEPTH_PALETTE = [
+    [0.02, 0.12, 1.00],
+    [0.00, 0.84, 1.00],
+    [0.02, 0.90, 0.12],
+    [1.00, 0.92, 0.02],
+    [1.00, 0.42, 0.00],
+    [0.94, 0.04, 0.015],
   ];
 
   function estimateSpacing(positions, requestedSamples) {
@@ -63,45 +65,44 @@
   }
 
   function interpolateColor(normalized) {
-    const scaled = Math.min(1, Math.max(0, normalized)) * (DISTANCE_PALETTE.length - 1);
-    const segment = Math.min(Math.floor(scaled), DISTANCE_PALETTE.length - 2);
+    const scaled = Math.min(1, Math.max(0, normalized)) * (DEPTH_PALETTE.length - 1);
+    const segment = Math.min(Math.floor(scaled), DEPTH_PALETTE.length - 2);
     const blend = scaled - segment;
-    return DISTANCE_PALETTE[segment].map(function (channel, index) {
-      return channel * (1 - blend) + DISTANCE_PALETTE[segment + 1][index] * blend;
+    return DEPTH_PALETTE[segment].map(function (channel, index) {
+      return channel * (1 - blend) + DEPTH_PALETTE[segment + 1][index] * blend;
     });
   }
 
-  function distanceColors(positionArray, origin, lowPercentile, highPercentile) {
+  function depthColors(positionArray, origin, lowPercentile, highPercentile) {
     const pointCount = Math.floor((positionArray && positionArray.length || 0) / 3);
     const sensor = Array.isArray(origin) && origin.length >= 3 ? origin : [0, 0, 0];
-    const distances = new Float64Array(pointCount);
-    const sortedDistances = [];
+    // The default MS01 PCD stores forward camera depth on X; Y and Z span the image plane.
+    const sensorX = Number(sensor[0]) || 0;
+    const depths = new Float64Array(pointCount);
+    const sortedDepths = [];
 
     for (let index = 0; index < pointCount; index += 1) {
       const offset = index * 3;
-      const dx = positionArray[offset] - Number(sensor[0] || 0);
-      const dy = positionArray[offset + 1] - Number(sensor[1] || 0);
-      const dz = positionArray[offset + 2] - Number(sensor[2] || 0);
-      const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-      distances[index] = distance;
-      if (Number.isFinite(distance)) sortedDistances.push(distance);
+      const depth = Math.abs(positionArray[offset] - sensorX);
+      depths[index] = depth;
+      if (Number.isFinite(depth)) sortedDepths.push(depth);
     }
 
     const colors = new Float32Array(pointCount * 3);
-    if (!sortedDistances.length) {
-      return { colors: colors, minDistance: 0, maxDistance: 0 };
+    if (!sortedDepths.length) {
+      return { colors: colors, minDepth: 0, maxDepth: 0 };
     }
 
-    sortedDistances.sort(function (a, b) { return a - b; });
+    sortedDepths.sort(function (a, b) { return a - b; });
     const low = Number.isFinite(lowPercentile) ? lowPercentile : 0.02;
     const high = Number.isFinite(highPercentile) ? highPercentile : 0.98;
-    const minDistance = percentile(sortedDistances, Math.min(1, Math.max(0, low)));
-    const maxDistance = percentile(sortedDistances, Math.min(1, Math.max(low, high)));
-    const distanceRange = maxDistance - minDistance;
+    const minDepth = percentile(sortedDepths, Math.min(1, Math.max(0, low)));
+    const maxDepth = percentile(sortedDepths, Math.min(1, Math.max(low, high)));
+    const depthRange = maxDepth - minDepth;
 
     for (let index = 0; index < pointCount; index += 1) {
-      const normalized = distanceRange > 0 && Number.isFinite(distances[index])
-        ? Math.min(1, Math.max(0, (distances[index] - minDistance) / distanceRange))
+      const normalized = depthRange > 0 && Number.isFinite(depths[index])
+        ? Math.min(1, Math.max(0, (depths[index] - minDepth) / depthRange))
         : 0.5;
       const rgb = interpolateColor(normalized);
       const offset = index * 3;
@@ -110,7 +111,7 @@
       colors[offset + 2] = rgb[2];
     }
 
-    return { colors: colors, minDistance: minDistance, maxDistance: maxDistance };
+    return { colors: colors, minDepth: minDepth, maxDepth: maxDepth };
   }
 
   function pointSizeForSpacing(spacing, multiplier) {
@@ -177,7 +178,7 @@
 
   return {
     estimateSpacing: estimateSpacing,
-    distanceColors: distanceColors,
+    depthColors: depthColors,
     pointSizeForSpacing: pointSizeForSpacing,
     stepPointSize: stepPointSize,
     hasPointRgb: hasPointRgb,
