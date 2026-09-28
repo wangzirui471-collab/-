@@ -115,8 +115,18 @@
 
   function pointSizeForSpacing(spacing, multiplier) {
     const safeSpacing = Number.isFinite(spacing) && spacing > 0 ? spacing : 0;
-    const safeMultiplier = Number.isFinite(multiplier) && multiplier > 0 ? multiplier : 0.65;
+    const safeMultiplier = Number.isFinite(multiplier) && multiplier > 0 ? multiplier : 1;
     return Math.max(safeSpacing * safeMultiplier, 0.001);
+  }
+
+  function stepPointSize(value, direction, minimum, maximum, increment) {
+    const lower = Number.isFinite(minimum) ? minimum : 0.25;
+    const upper = Number.isFinite(maximum) ? Math.max(lower, maximum) : 3;
+    const current = Number.isFinite(value) ? value : 1;
+    const step = Number.isFinite(increment) && increment > 0 ? increment : 0.1;
+    const sign = Math.sign(Number(direction) || 0);
+    const next = Math.min(upper, Math.max(lower, current + sign * step));
+    return Math.round(next * 100) / 100;
   }
 
   function hasPointRgb(fields, colorAttribute, pointCount) {
@@ -169,7 +179,9 @@
     estimateSpacing: estimateSpacing,
     distanceColors: distanceColors,
     pointSizeForSpacing: pointSizeForSpacing,
+    stepPointSize: stepPointSize,
     hasPointRgb: hasPointRgb,
     addCircularPointMask: addCircularPointMask,
   };
 }));
+

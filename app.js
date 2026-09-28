@@ -16,6 +16,8 @@
   const axisViewButtons = document.querySelectorAll('[data-axis-view]');
   const pointSizeInput = document.querySelector('#point-size');
   const pointSizeValue = document.querySelector('#point-size-value');
+  const pointSizeDecreaseButton = document.querySelector('#point-size-decrease');
+  const pointSizeIncreaseButton = document.querySelector('#point-size-increase');
   const pointSizeNote = document.querySelector('#point-size-note');
   const fileInput = document.querySelector('#pcd-file');
   const fileDropzone = document.querySelector('#file-dropzone');
@@ -270,10 +272,23 @@
     const multiplier = Number(pointSizeInput.value);
     const actualSize = pointDisplay.pointSizeForSpacing(cloudSpacing, multiplier);
     pointSizeValue.textContent = multiplier.toFixed(2) + '×';
+    pointSizeDecreaseButton.disabled = multiplier <= Number(pointSizeInput.min);
+    pointSizeIncreaseButton.disabled = multiplier >= Number(pointSizeInput.max);
     pointSizeNote.textContent = cloudSpacing > 0
       ? '估算点距 ' + cloudSpacing.toPrecision(3) + ' · 当前点径 ' + actualSize.toPrecision(3)
       : '加载后按点间距自动适配';
     if (cloudMaterial) cloudMaterial.size = actualSize;
+  }
+
+  function stepPointSize(direction) {
+    pointSizeInput.value = String(pointDisplay.stepPointSize(
+      Number(pointSizeInput.value),
+      direction,
+      Number(pointSizeInput.min),
+      Number(pointSizeInput.max),
+      0.1,
+    ));
+    updatePointSize();
   }
 
   function updateFilterLevelLabel() {
@@ -510,6 +525,12 @@
   pointSizeInput.addEventListener('input', function () {
     updatePointSize();
   });
+  pointSizeDecreaseButton.addEventListener('click', function () {
+    stepPointSize(-1);
+  });
+  pointSizeIncreaseButton.addEventListener('click', function () {
+    stepPointSize(1);
+  });
   fileInput.addEventListener('change', function (event) {
     const file = event.target.files && event.target.files[0];
     event.target.value = '';
@@ -545,3 +566,4 @@
 
   animate();
 }());
+
