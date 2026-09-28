@@ -108,12 +108,17 @@ button, input { font: inherit; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .viewer-toolbar { align-items: center; background: rgba(11, 23, 40, 0.84); border: 1px solid var(--line); border-radius: 8px 8px 16px 16px; color: var(--muted); display: flex; font-size: 11px; justify-content: space-between; min-height: 50px; padding: 0 18px; }
+.viewer-toolbar-actions { align-items: center; display: flex; gap: 12px; }
+.photo-layout-toggle { background: rgba(85, 216, 231, .08); border: 1px solid rgba(85, 216, 231, .3); border-radius: 7px; color: #c8f5fb; cursor: pointer; font-size: 10px; padding: 7px 11px; }
+.photo-layout-toggle:hover { background: rgba(85, 216, 231, .16); border-color: var(--cyan); }
+.photo-layout-toggle:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 .toolbar-hint { letter-spacing: 0.04em; }
 .mouse-icon { color: var(--cyan); font-size: 15px; margin-right: 4px; }
 .hint-separator { color: rgba(149, 181, 219, 0.38); margin: 0 7px; }
 .toolbar-badge { align-items: center; color: #9ed8cf; display: flex; font-size: 9px; gap: 7px; letter-spacing: 0.18em; }
 
 .photo-panel { background: linear-gradient(145deg, #0e1d31, #0a1728); border: 1px solid var(--line); border-radius: 16px; display: flex; flex-direction: column; height: 100%; min-height: 0; min-width: 0; padding: 15px; }
+.photo-panel[hidden] { display: none; }
 .photo-panel-header { align-items: flex-start; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
 .photo-panel-header h2 { font-size: 17px; font-weight: 550; margin: 7px 0 5px; }
 .photo-panel-header p { color: var(--muted); font-size: 10px; line-height: 1.6; margin: 0; }
@@ -133,6 +138,7 @@ button, input { font: inherit; }
 .photo-footer { align-items: baseline; display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; padding-top: 11px; }
 .photo-filename { color: #d8e8f8; font-size: 10px; overflow-wrap: anywhere; }
 .photo-status { color: var(--muted); font-size: 9px; }
+.visual-column.photo-hidden { grid-template-columns: minmax(0, 1fr); }
 
 .inspector { align-self: start; background: linear-gradient(180deg, rgba(14, 29, 49, 0.94), rgba(8, 18, 32, 0.94)); border: 1px solid var(--line); border-radius: 18px; display: flex; flex-direction: column; height: fit-content; min-height: 600px; padding: 24px 22px 18px; }
 .inspector-heading { align-items: flex-start; display: flex; justify-content: space-between; }

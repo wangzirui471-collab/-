@@ -56,11 +56,14 @@
             </div>
             <div class="viewer-toolbar">
               <div class="toolbar-hint"><span class="mouse-icon" aria-hidden="true">◉</span> 拖动旋转 <span class="hint-separator">·</span> 滚轮缩放 <span class="hint-separator">·</span> 中键平移</div>
-              <div class="toolbar-badge"><span class="toolbar-dot" aria-hidden="true"></span> READY</div>
+              <div class="viewer-toolbar-actions">
+                <button id="toggle-photo-layout" class="photo-layout-toggle" type="button" aria-controls="photo-panel" aria-expanded="true">收起图片</button>
+                <div class="toolbar-badge"><span class="toolbar-dot" aria-hidden="true"></span> READY</div>
+              </div>
             </div>
           </section>
 
-          <section class="photo-panel" aria-labelledby="photo-heading">
+          <section id="photo-panel" class="photo-panel" aria-labelledby="photo-heading">
             <div class="photo-panel-header">
               <div>
                 <span class="section-kicker">REFERENCE PHOTO / 01</span>

@@ -27,6 +27,9 @@
   const pointDisplay = window.TaihePointDisplay;
   const viewPresets = window.TaiheViewPresets;
   const photoPreview = window.TaihePhotoPreview;
+  const visualColumn = document.querySelector('.visual-column');
+  const photoPanel = document.querySelector('#photo-panel');
+  const photoLayoutToggle = document.querySelector('#toggle-photo-layout');
   const downloadButton = document.querySelector('#download-model');
   const shareButton = document.querySelector('#share-model');
   const embedButton = document.querySelector('#embed-model');
@@ -104,6 +107,20 @@
   function updateFileSelection(message, isError) {
     fileSelection.textContent = message;
     fileSelection.classList.toggle('is-error', Boolean(isError));
+  }
+
+  function updatePhotoLayout(showPhoto) {
+    photoPanel.hidden = !showPhoto;
+    visualColumn.classList.toggle('photo-hidden', !showPhoto);
+    photoLayoutToggle.setAttribute('aria-expanded', String(showPhoto));
+    photoLayoutToggle.textContent = showPhoto ? '收起图片' : '展开图片';
+    photoLayoutToggle.setAttribute(
+      'aria-label',
+      showPhoto ? '收起点云对应图片并放大点云' : '展开点云对应图片并排对照',
+    );
+
+    // Resize after the grid has applied the updated column width.
+    window.requestAnimationFrame(resizeRenderer);
   }
 
   function resizeRenderer() {
@@ -416,6 +433,9 @@
     });
   }
 
+  photoLayoutToggle.addEventListener('click', function () {
+    updatePhotoLayout(photoPanel.hidden);
+  });
   resetButton.addEventListener('click', fitCamera);
   axisViewButtons.forEach(function (button) {
     button.addEventListener('click', function () {
