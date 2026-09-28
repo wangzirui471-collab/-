@@ -26,6 +26,7 @@
   const modelActions = window.TaiheModelActions;
   const pointDisplay = window.TaihePointDisplay;
   const viewPresets = window.TaiheViewPresets;
+  const photoPreview = window.TaihePhotoPreview;
   const downloadButton = document.querySelector('#download-model');
   const shareButton = document.querySelector('#share-model');
   const embedButton = document.querySelector('#embed-model');
@@ -33,6 +34,18 @@
   const dialogValue = document.querySelector('#dialog-value');
   let selectedLocalFile = null;
   let sourceGeometry = null;
+
+  if (photoPreview) {
+    photoPreview.bindPhotoPreview({
+      input: document.querySelector('#photo-file'),
+      image: document.querySelector('#photo-preview'),
+      placeholder: document.querySelector('#photo-placeholder'),
+      filename: document.querySelector('#photo-filename'),
+      clearButton: document.querySelector('#clear-photo'),
+      status: document.querySelector('#photo-status'),
+      urlApi: URL,
+    });
+  }
 
   if (new URLSearchParams(window.location.search).get('embed') === '1') {
     document.body.classList.add('embed-mode');

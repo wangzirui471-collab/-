@@ -23,8 +23,9 @@
       </header>
 
       <main class="workspace">
-        <section class="viewer-panel" aria-label="三维点云视图">
-          <div id="viewport" class="viewport" data-point-cloud="./cloud_20260924_083459_906.pcd" role="application" aria-label="可交互三维点云画布">
+        <div class="visual-column">
+          <section class="viewer-panel" aria-label="三维点云视图">
+            <div id="viewport" class="viewport" data-point-cloud="./cloud_20260924_083459_906.pcd" role="application" aria-label="可交互三维点云画布">
             <div class="viewport-grid" aria-hidden="true"></div>
             <div class="viewport-label"><span class="crosshair" aria-hidden="true">＋</span> 3D POINT CLOUD</div>
             <div class="axis-view-controls" role="group" aria-label="固定视角">
@@ -52,12 +53,40 @@
               <strong>点云加载失败</strong>
               <span id="error-message">请刷新页面或重新选择 PCD 文件。</span>
             </div>
-          </div>
-          <div class="viewer-toolbar">
-            <div class="toolbar-hint"><span class="mouse-icon" aria-hidden="true">◉</span> 拖动旋转 <span class="hint-separator">·</span> 滚轮缩放 <span class="hint-separator">·</span> 中键平移</div>
-            <div class="toolbar-badge"><span class="toolbar-dot" aria-hidden="true"></span> READY</div>
-          </div>
-        </section>
+            </div>
+            <div class="viewer-toolbar">
+              <div class="toolbar-hint"><span class="mouse-icon" aria-hidden="true">◉</span> 拖动旋转 <span class="hint-separator">·</span> 滚轮缩放 <span class="hint-separator">·</span> 中键平移</div>
+              <div class="toolbar-badge"><span class="toolbar-dot" aria-hidden="true"></span> READY</div>
+            </div>
+          </section>
+
+          <section class="photo-panel" aria-labelledby="photo-heading">
+            <div class="photo-panel-header">
+              <div>
+                <span class="section-kicker">REFERENCE PHOTO / 01</span>
+                <h2 id="photo-heading">点云对应照片</h2>
+                <p>选择拍摄这份点云时的现场照片，与点云在同一页面对照查看。</p>
+              </div>
+              <div class="photo-actions">
+                <input id="photo-file" class="file-input" type="file" accept="image/*" aria-label="选择点云对应照片" />
+                <label class="file-button" for="photo-file"><span aria-hidden="true">＋</span> 选择照片</label>
+                <button id="clear-photo" class="photo-clear-button" type="button">移除照片</button>
+              </div>
+            </div>
+            <div class="photo-stage">
+              <div id="photo-placeholder" class="photo-placeholder" hidden>
+                <span class="photo-placeholder-icon" aria-hidden="true">▧</span>
+                <strong>尚未选择对应照片</strong>
+                <span>支持浏览器可预览的 JPG、PNG、WEBP 等格式</span>
+              </div>
+              <img id="photo-preview" class="photo-preview" src="./ms01-reference-photo.jpg" alt="默认点云对应的现场植物照片" />
+            </div>
+            <div class="photo-footer">
+              <span id="photo-filename" class="photo-filename">默认现场照片</span>
+              <span id="photo-status" class="photo-status" role="status" aria-live="polite">默认照片已公开展示；你手动选择的照片只在本机显示，不会上传。</span>
+            </div>
+          </section>
+        </div>
 
         <aside class="inspector" aria-label="点云信息和控制项">
           <div class="inspector-heading">
@@ -199,6 +228,7 @@
     <script src="./point-filter.js"></script>
     <script src="./point-display.js"></script>
     <script src="./view-presets.js"></script>
+    <script src="./photo-preview.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
