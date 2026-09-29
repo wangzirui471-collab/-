@@ -23,6 +23,7 @@
       fields: model.fields.join(' · '),
       license: '未注明',
       source: model.local ? '本地文件（未上传）' : '网站公开样例',
+      captureMode: model.local ? '未记录（本机文件）' : 'TH-MS01 · 双频 175 / 200 MHz',
     };
   }
   return { publicPageUrl, embedCode, modelDetails };

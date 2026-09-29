@@ -402,6 +402,7 @@
     document.querySelector('#model-fields').textContent = details.fields;
     document.querySelector('#model-source').textContent = details.source;
     document.querySelector('#model-license').textContent = details.license;
+    document.querySelector('#model-capture-mode').textContent = details.captureMode;
     downloadButton.disabled = false;
     fitCamera();
   }
