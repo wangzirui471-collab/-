@@ -220,7 +220,7 @@
     geometry.setAttribute('color', new THREE.BufferAttribute(result.colors, 3));
     fields.textContent = (parsedHeader.fields || ['x', 'y', 'z']).join(' · ');
     if (distanceLegend) distanceLegend.hidden = false;
-    if (pointColorNote) pointColorNote.textContent = '当前为 X 轴深度伪彩（近蓝、远红），不是照片颜色。';
+    if (pointColorNote) pointColorNote.textContent = '无 RGB 数据时，颜色按 X 轴深度连续映射为可见光谱渐变（近紫、远红）；这是深度伪彩，不是照片颜色。';
     return 'depth';
   }
 
@@ -565,3 +565,4 @@
 
   animate();
 }());
+

@@ -7,7 +7,7 @@
     <meta name="description" content="泰合技术三维点云查看器。在线旋转、缩放、平移查看 MS01 点云，也可选择本地 PCD 文件。" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='13'%20fill='%2307111f'/%3E%3Ctext%20x='32'%20y='43'%20text-anchor='middle'%20font-size='31'%20font-family='Arial'%20font-weight='700'%20fill='%2355d8e7'%3ETH%3C/text%3E%3C/svg%3E" />
     <title>泰合技术 · 3D 点云浏览器</title>
-    <link rel="stylesheet" href="./styles.css?v=20260929-2" />
+    <link rel="stylesheet" href="./styles.css?v=20260930-spectrum-1" />
   </head>
   <body>
     <div id="app" class="app-shell">
@@ -42,9 +42,9 @@
               <button class="axis-view-button" type="button" data-axis-view="ZU" aria-label="Z 轴正向视角" title="Z 轴正向视角">ZU</button>
               <button class="axis-view-button" type="button" data-axis-view="ZD" aria-label="Z 轴负向视角" title="Z 轴负向视角">ZD</button>
             </div>
-            <div id="distance-legend" class="distance-legend" aria-label="颜色按 X 轴相机深度由近到远映射">
+            <div id="distance-legend" class="distance-legend" aria-label="颜色按 X 轴相机深度由近到远映射为紫、蓝、青、绿、黄、橙、红的连续可见光谱">
               <span>近</span><span class="distance-gradient" aria-hidden="true"></span><span>远</span>
-              <span class="distance-legend-caption">深度伪彩</span>
+              <span class="distance-legend-caption">可见光谱</span>
             </div>
             <div class="filter-level-control" aria-label="飞点滤波强度">
               <label for="filter-level"><span>滤波强度</span><output id="filter-level-value" for="filter-level">23 / 100</output></label>
@@ -178,7 +178,7 @@
             <span class="hint-card-icon" aria-hidden="true">✦</span>
             <div>
               <strong>交互提示</strong>
-              <p id="point-color-note">无 RGB 数据时，颜色按 X 轴深度着色（近蓝、远红），不是照片颜色；小圆点便于分辨间隙。</p>
+              <p id="point-color-note">无 RGB 数据时，颜色按 X 轴深度连续映射为可见光谱渐变（近紫、远红）；这是深度伪彩，不是照片颜色。</p>
             </div>
           </section>
 
@@ -209,7 +209,7 @@
           <div><dt>授权</dt><dd id="model-license">未注明</dd></div>
           <div><dt>采集模式</dt><dd id="model-capture-mode">TH-MS01 · 双频 175 / 200 MHz</dd></div>
         </dl>
-        <p class="model-description">使用泰合技术点云查看器在线观察三维数据。支持鼠标旋转、缩放、中键平移，也支持从本机打开 PCD 文件。颜色根据点到传感器原点的距离映射，仅用于观察空间层次，不代表真实照片颜色。</p>
+        <p class="model-description">使用泰合技术点云查看器在线观察三维数据。支持鼠标旋转、缩放、中键平移，也支持从本机打开 PCD 文件。无 RGB 数据时，颜色按 X 轴深度映射为紫、蓝、青、绿、黄、橙、红的连续可见光谱渐变，仅用于区分深度，不代表真实照片颜色。</p>
       </section>
     </div>
     <dialog id="link-dialog" class="link-dialog" aria-labelledby="dialog-title">
@@ -243,10 +243,11 @@
     <script src="./vendor/PCDLoader.js"></script>
     <script src="./model-actions.js?v=20260929-2"></script>
     <script src="./point-filter.js?v=20260929-2"></script>
-    <script src="./point-display.js?v=20260929-2"></script>
+    <script src="./point-display.js?v=20260930-spectrum-1"></script>
     <script src="./view-presets.js?v=20260929-2"></script>
     <script src="./photo-preview.js?v=20260929-2"></script>
     <script src="./panel-layout.js?v=20260929-2"></script>
-    <script src="./app.js?v=20260929-2"></script>
+    <script src="./app.js?v=20260930-spectrum-1"></script>
   </body>
 </html>
+
