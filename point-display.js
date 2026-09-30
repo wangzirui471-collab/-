@@ -55,22 +55,22 @@
     return sortedValues[lower] * (1 - blend) + sortedValues[upper] * blend;
   }
 
-  function visibleSpectrumColor(normalized) {
-    const value = Math.min(1, Math.max(0, Number(normalized) || 0));
-    const hue = (1 - value) * 280;
-    const sectorPosition = hue / 60;
-    const sector = Math.floor(sectorPosition);
-    const fraction = sectorPosition - sector;
-    const descending = 1 - fraction;
+  const DEPTH_PALETTE = [
+    [0.02, 0.12, 1.00],
+    [0.00, 0.84, 1.00],
+    [0.02, 0.90, 0.12],
+    [1.00, 0.92, 0.02],
+    [1.00, 0.42, 0.00],
+    [0.94, 0.04, 0.015],
+  ];
 
-    switch (sector) {
-      case 0: return [1, fraction, 0];
-      case 1: return [descending, 1, 0];
-      case 2: return [0, 1, fraction];
-      case 3: return [0, descending, 1];
-      case 4: return [fraction, 0, 1];
-      default: return [1, 0, descending];
-    }
+  function interpolateColor(normalized) {
+    const scaled = Math.min(1, Math.max(0, normalized)) * (DEPTH_PALETTE.length - 1);
+    const segment = Math.min(Math.floor(scaled), DEPTH_PALETTE.length - 2);
+    const blend = scaled - segment;
+    return DEPTH_PALETTE[segment].map(function (channel, index) {
+      return channel * (1 - blend) + DEPTH_PALETTE[segment + 1][index] * blend;
+    });
   }
 
   function depthColors(positionArray, origin, lowPercentile, highPercentile) {
@@ -104,7 +104,7 @@
       const normalized = depthRange > 0 && Number.isFinite(depths[index])
         ? Math.min(1, Math.max(0, (depths[index] - minDepth) / depthRange))
         : 0.5;
-      const rgb = visibleSpectrumColor(normalized);
+      const rgb = interpolateColor(normalized);
       const offset = index * 3;
       colors[offset] = rgb[0];
       colors[offset + 1] = rgb[1];
